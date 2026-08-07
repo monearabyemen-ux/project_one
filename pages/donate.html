@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مؤسسة الوليد الإنسانية | تقديم تبرع</title>
+
+    <!-- External CSS (Icons) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Internal CSS -->
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/pages.css">
+</head>
+
+<body>
+
+    <!-- ====================== Header ====================== -->
+    <section class="about-hero small-hero"
+        style="background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('images/xx.jpg');">
+        <div>
+            <div style="width: 110px; height: 110px; background: #fff url('images/xx.jpg') center/cover; border-radius: 50%; border: 4px solid rgba(255,255,255,0.8); box-shadow: 0 4px 15px rgba(0,0,0,0.3); margin: 0 auto 15px;"
+                class="reveal"></div>
+            <h1 class="reveal">مؤسسة الوليد الإنسانية</h1>
+            <p class="reveal">كن شريكاً في صناعة الأمل. تبرعك اليوم يبني مستقبلاً أفضل لمن هم في أمسّ الحاجة إليك.</p>
+        </div>
+    </section>
+
+    <div class="spacer-50"></div>
+
+    <!-- ====================== نموذج التبرع ====================== -->
+    <div class="form-card reveal" style="max-width: 600px; margin: 0 auto 50px;">
+        <h2 style="color: var(--gold);">تقديم طلب تبرع جديد</h2>
+
+        <form id="donationForm">
+            <div class="input-group">
+                <label>اسم المتبرع الكريم:</label>
+                <input type="text" id="name" placeholder="اكتب اسمك هنا" required>
+            </div>
+
+            <div class="flex-group">
+                <div class="input-group" style="flex: 2;">
+                    <label>مبلغ التبرع:</label>
+                    <input type="number" id="amount" placeholder="المبلغ" required>
+                </div>
+                <div class="input-group" style="flex: 1;">
+                    <label>العملة:</label>
+                    <select id="currency">
+                        <option value="دولار">USD</option>
+                        <option value="ريال">SAR</option>
+                        <option value="درهم">AED</option>
+                        <option value="يورو">EUR</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>جنسية المتبرع:</label>
+                <input type="text" id="nationality" placeholder="مثال: سعودي، يمني، مصري..." required>
+            </div>
+
+            <label style="font-size: 0.9rem; color: #bbb;">اختر وسيلة الدفع المناسبة:</label>
+            <div class="payment-methods">
+                <button type="button" class="method-btn active" id="tabBank"
+                    onclick="switchMethod('Bank')">بنكي</button>
+                <button type="button" class="method-btn" id="tabWestern" onclick="switchMethod('Western')">ويسترن
+                    يونيون</button>
+                <button type="button" class="method-btn" id="tabCrypto" onclick="switchMethod('Crypto')">عملات
+                    رقمية</button>
+            </div>
+
+            <div id="boxBank" class="details-box active">
+                <p style="text-align:center; font-weight:bold; margin-bottom: 10px;">الحساب البنكي المعتمد</p>
+                <p>يرجى إرسال بياناتك لتزويدك برقم الآيبان المحدث الخاص بالمؤسسة من أجل إكمال عملية التبرع.</p>
+            </div>
+
+            <div id="boxWestern" class="details-box">
+                <p style="text-align:center; font-weight:bold; margin-bottom: 10px;">تحويل ويسترن يونيون</p>
+                <p>سيتم تزويدك باسم المستفيد المعتمد للتحويل الدولي عبر ويسترن يونيون عن طريق واتساب بعد إرسال هذا
+                    الطلب.</p>
+            </div>
+
+            <div id="boxCrypto" class="details-box">
+                <p style="text-align:center; font-weight:bold; margin-bottom: 10px;">عناوين المحافظ المعتمدة (BSC)</p>
+                <span class="address-copy">0xa219e65dfe4d818bc15125f86c4356b90c01675d</span>
+                <button type="button" class="btn-crypto"
+                    onclick="navigator.clipboard.writeText('0xa219e65dfe4d818bc15125f86c4356b90c01675d').then(()=>alert('تم نسخ العنوان'))">نسخ
+                    عنوان المحفظة</button>
+            </div>
+
+            <button type="button" id="sendWhatsapp" class="submit-whatsapp-btn" style="margin-top: 15px;">
+                <i class="fab fa-whatsapp"></i> تأكيد وإرسال الطلب عبر واتساب
+            </button>
+        </form>
+    </div>
+
+    <div class="spacer-30"></div>
+
+    <!-- ====================== الفوتر ====================== -->
+    <footer class="main-footer">
+        <div class="footer-container">
+            <div class="footer-section contact-info">
+                <h3>تواصل معنا</h3>
+                <div class="contact-links">
+                    <a href="mailto:support@alwaleed.com" class="contact-item">
+                        <i class="fas fa-envelope"></i> البريد الإلكتروني
+                    </a>
+                    <a href="https://wa.me/966578012189" class="contact-item">
+                        <i class="fab fa-whatsapp"></i> واتساب الدعم
+                    </a>
+                </div>
+            </div>
+
+            <div class="footer-section legal-links">
+                <h3>الروابط القانونية</h3>
+                <div class="links-grid">
+                    <a href="privacy-policy.html">سياسة الخصوصية</a>
+                    <a href="terms.html">شروط الاستخدام</a>
+                </div>
+            </div>
+
+            <div class="footer-divider"></div>
+
+            <div class="footer-bottom">
+                <p>جميع حقوق النشر والطبع محفوظة لمؤسسة الوليد © 2026</p>
+                <p class="branding">تم تطويره بكل فخر لمستقبل إنساني أفضل</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ====================== Payment Method Switch ====================== -->
+    <script>
+        function switchMethod(method) {
+            document.querySelectorAll('.method-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.details-box').forEach(box => box.classList.remove('active'));
+            document.getElementById('tab' + method).classList.add('active');
+            document.getElementById('box' + method).classList.add('active');
+        }
+    </script>
+
+    <!-- ====================== Firebase + WhatsApp Integration ====================== -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyC1-J4dSTmxUnz5d7dvq9XWrRHf_Lr511M",
+            authDomain: "alwaleed-3a813.firebaseapp.com",
+            projectId: "alwaleed-3a813",
+            storageBucket: "alwaleed-3a813.firebasestorage.app",
+            messagingSenderId: "680698906569",
+            appId: "1:680698906569:web:154df6466c1c89d67f4a18"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        document.getElementById('sendWhatsapp').onclick = async function () {
+            const name = document.getElementById('name').value.trim();
+            const amount = document.getElementById('amount').value;
+            const currency = document.getElementById('currency').value;
+            const nationality = document.getElementById('nationality').value;
+            const method = document.querySelector('.method-btn.active').innerText;
+
+            if (!name || !amount || !nationality) {
+                alert("يرجى ملء كافة البيانات أولاً");
+                return;
+            }
+
+            if (localStorage.getItem('hasDonated')) {
+                alert("عذراً، لقد قمت بتقديم طلب تبرع مسبقاً من هذا الجهاز.");
+                return;
+            }
+
+            try {
+                const q = query(collection(db, "donations"), where("name", "==", name));
+                const querySnapshot = await getDocs(q);
+
+                if (!querySnapshot.empty) {
+                    alert("هذا الاسم مسجل لدينا بالفعل في طلب سابق. لا يمكن تكرار الطلب بنفس الاسم.");
+                    return;
+                }
+
+                await addDoc(collection(db, "donations"), {
+                    name, amount: Number(amount), currency, nationality, method, date: new Date().toISOString()
+                });
+
+                localStorage.setItem('hasDonated', 'true');
+
+                const adminPhone = "966578012189";
+                const message = `*طلب تقديم تبرع جديد* 🕊️\n\n*الاسم:* ${name}\n*الجنسية:* ${nationality}\n*المبلغ:* ${amount} ${currency}\n*الوسيلة:* ${method}\n\n_يرجى تزويدي بالبيانات اللازمة._`;
+                window.location.href = `https://wa.me/${adminPhone}?text=${encodeURIComponent(message)}`;
+            } catch (e) {
+                console.error(e);
+                alert("حدث خطأ في الاتصال");
+            }
+        };
+    </script>
+
+    <!-- Reveal Animation -->
+    <script src="../js/main.js"></script>
+    <script src="../js/components.js"></script>
+</body>
+
+</html>

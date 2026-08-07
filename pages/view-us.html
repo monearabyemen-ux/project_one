@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مؤسسة الوليد الإنسانية | حالة الطلبات</title>
+
+    <!-- External CSS (Icons) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Internal CSS -->
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/pages.css">
+</head>
+
+<body>
+
+    <!-- ====================== Header ====================== -->
+    <header id="header">
+        <div class="logo-container">
+            <a href="../index.html">
+                <img src="../assets/logos/logo-white.svg" alt="مؤسسة الوليد للإنسانية">
+            </a>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="hmlat.html">المشاريع</a></li>
+                <li><a href="cases.html">التبرعات</a></li>
+                <li><a href="view-us.html" style="color:var(--primary-green);">المساعدات</a></li>
+                <li><a href="we.html">من نحن</a></li>
+                <li><i class="fas fa-bars"></i></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- ====================== Hero Section ====================== -->
+    <section class="about-hero small-hero"
+        style="background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('../images/qqr.jpg');">
+        <div>
+            <h1>حالة طلبات المساعدة</h1>
+            <p>يمكنك متابعة حالة طلب المساعدة الخاص بك من خلال هذا الجدول.</p>
+        </div>
+    </section>
+
+    <!-- ====================== Table Section ====================== -->
+    <section class="table-section reveal text-1">
+        <div class="container-box">
+            <h2>الطلبات الأخيرة</h2>
+            <p style="text-align:center; color:#888; margin-bottom:20px; font-size:0.9rem;">
+                <i class="fas fa-pause-circle"></i> مرر المؤشر على الجدول لإيقاف التمرير
+            </p>
+
+            <div class="scroll-table-container" id="requests-scroll">
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>الاسم الرباعي</th>
+                                <th>رقم الهوية</th>
+                                <th>حالة الطلب</th>
+                                <th>المساعدة المطلوبة</th>
+                                <th>ملاحظات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="requests-tbody">
+                            <!-- يتم تعبئة البيانات عبر JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div style="text-align:center; margin-top:30px;">
+                <p style="color: #666; margin-bottom: 15px; font-size: 0.9rem;">لتحديث بياناتك أو الاستفسار عن طلبك،
+                    يرجى التواصل مع الدعم عبر واتساب.</p>
+                <a href="https://wa.me/966578012189" class="btn-action" style="padding: 10px 20px; font-size: 1rem;"><i
+                        class="fab fa-whatsapp"></i> تواصل مع الدعم</a>
+            </div>
+        </div>
+    </section>
+
+    <div class="spacer-50"></div>
+
+    <!-- ====================== الفوتر ====================== -->
+    <footer class="main-footer">
+        <div class="footer-container">
+            <div class="footer-section contact-info">
+                <h3>تواصل معنا</h3>
+                <div class="contact-links">
+                    <a href="mailto:support@alwaleed.com" class="contact-item">
+                        <i class="fas fa-envelope"></i> البريد الإلكتروني
+                    </a>
+                    <a href="https://wa.me/966578012189" class="contact-item">
+                        <i class="fab fa-whatsapp"></i> واتساب الدعم
+                    </a>
+                </div>
+            </div>
+
+            <div class="footer-section legal-links">
+                <h3>الروابط القانونية</h3>
+                <div class="links-grid">
+                    <a href="privacy-policy.html">سياسة الخصوصية</a>
+                    <a href="terms.html">شروط الاستخدام</a>
+                </div>
+            </div>
+
+            <div class="footer-divider"></div>
+
+            <div class="footer-bottom">
+                <p>جميع حقوق النشر والطبع محفوظة لمؤسسة الوليد © 2026</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- بيانات الطلبات - يجب تحميلها أولاً -->
+    <script src="../data/requests-data.js"></script>
+
+    <!-- منطق تعبئة وتمرير الجدول -->
+    <script>
+        window.addEventListener('load', function () {
+            const tbody = document.getElementById('requests-tbody');
+            const container = document.getElementById('requests-scroll');
+
+            if (!tbody) { console.error('tbody not found'); return; }
+            if (typeof REQUESTS_DATA === 'undefined') { console.error('REQUESTS_DATA not found'); return; }
+
+            var statusMap = {
+                'pending': { label: 'قيد المراجعة', cls: 'status-pending' },
+                'approved': { label: 'تمت الموافقة', cls: 'status-approved' },
+                'processing': { label: 'قيد المعالجة', cls: 'status-processing' },
+                'rejected': { label: 'مرفوض', cls: 'status-rejected' }
+            };
+
+            // تعبئة الجدول
+            var html = '';
+            REQUESTS_DATA.forEach(function (item, index) {
+                var s = statusMap[item.status] || statusMap['pending'];
+                html += '<tr>' +
+                    '<td>' + (index + 1) + '</td>' +
+                    '<td>' + item.name + '</td>' +
+                    '<td>' + item.id + '</td>' +
+                    '<td><span class="status-badge ' + s.cls + '">' + s.label + '</span></td>' +
+                    '<td>' + item.type + '</td>' +
+                    '<td>' + item.notes + '</td>' +
+                    '</tr>';
+            });
+
+            // تكرار البيانات مرتين للتمرير المستمر
+            tbody.innerHTML = html + html;
+
+            // إعداد التمرير التلقائي
+            var isPaused = false;
+            container.style.maxHeight = '500px';
+            container.style.overflow = 'hidden';
+
+            container.addEventListener('mouseenter', function () { isPaused = true; });
+            container.addEventListener('mouseleave', function () { isPaused = false; });
+            container.addEventListener('touchstart', function () { isPaused = true; });
+            container.addEventListener('touchend', function () { isPaused = false; });
+
+            // حركة التمرير
+            var scrollPos = 0;
+            var halfHeight = tbody.scrollHeight / 2;
+
+            function animate() {
+                if (!isPaused) {
+                    scrollPos += 0.5;
+                    if (scrollPos >= halfHeight) {
+                        scrollPos = 0;
+                    }
+                    tbody.style.transform = 'translateY(-' + scrollPos + 'px)';
+                }
+                requestAnimationFrame(animate);
+            }
+
+            setTimeout(function () {
+                halfHeight = tbody.scrollHeight / 2;
+                animate();
+            }, 100);
+        });
+    </script>
+
+    <!-- Scripts -->
+    <script src="../js/main.js"></script>
+    <script src="../js/components.js"></script>
+</body>
+
+</html>

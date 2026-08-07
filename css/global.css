@@ -1,0 +1,203 @@
+/* ============================================================
+   global.css - مؤسسة الوليد للإنسانية
+   المتغيرات العامة + Reset + Typography + Utilities
+   ============================================================ */
+
+/* --- استيراد الخطوط --- */
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap');
+
+/* --- المتغيرات العامة (Design Tokens) --- */
+:root {
+    /* الألوان الأساسية */
+    --primary-green: #008444;
+    --primary-green-dark: #006400;
+    --primary-green-light: #28a745;
+    --accent-purple: #7e57c2;
+    --whatsapp-color: #25D366;
+
+    /* ألوان الداكن (Footer, Privacy, Terms) */
+    --dark-bg: #0f172a;
+    --dark-card: #1e293b;
+    --dark-blue: #38bdf8;
+    --dark-accent: #0ea5e9;
+    --dark-text: #f1f5f9;
+    --dark-text-muted: #94a3b8;
+    --dark-border: #334155;
+
+    /* ألوان محايدة */
+    --white: #ffffff;
+    --off-white: #f8f9fa;
+    --light-gray: #f0f2f5;
+    --gray: #666;
+    --dark-gray: #333;
+    --border-color: #eee;
+
+    /* ألوان التبرع */
+    --gold: #d1b46a;
+    --card-bg-dark: #1a2522;
+
+    /* الخطوط */
+    --font-primary: 'Cairo', 'Segoe UI', Tahoma, sans-serif;
+
+    /* الانتقالات */
+    --transition-speed: 0.4s;
+    --transition-smooth: all 0.3s ease;
+
+    /* الظلال */
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 5px 15px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 15px 35px rgba(0, 0, 0, 0.12);
+
+    /* الزوايا */
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 15px;
+    --radius-xl: 25px;
+    --radius-full: 50px;
+}
+
+/* --- CSS Reset --- */
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+    font-size: 100%;
+}
+
+html, body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+body {
+    font-family: var(--font-primary);
+    background-color: var(--white);
+    color: var(--dark-gray);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+section {
+    scroll-margin-top: 80px;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+    transition: var(--transition-smooth);
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+ul {
+    list-style: none;
+}
+
+button {
+    cursor: pointer;
+    border: none;
+    background: none;
+    font-family: inherit;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    outline: 2px solid var(--primary-green);
+    outline-offset: 2px;
+}
+
+/* --- أنماط الأنيميشن (Reveal on Scroll) --- */
+.reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: all 1.0s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.text-1 { transition-delay: 0s; }
+.text-2 { transition-delay: 0.5s; }
+.text-3 { transition-delay: 1s; }
+
+/* --- الفواصل الخطية --- */
+.line-container {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 0 5%;
+    margin: 50px 0;
+    flex-direction: row;
+}
+
+.line-container.reverse {
+    flex-direction: row-reverse !important;
+}
+
+.line-text {
+    font-size: 1.1rem;
+    color: #555;
+    white-space: nowrap;
+    font-weight: 500;
+}
+
+.line-container i {
+    color: var(--primary-green);
+    font-size: 1.4rem;
+    margin-left: 10px;
+}
+
+.styled-line {
+    flex-grow: 1;
+    height: 1.5px;
+    background-color: var(--dark-gray);
+    opacity: 0.6;
+}
+
+/* --- الفاصل الأخضر --- */
+.hr {
+    border: 0;
+    height: 2px;
+    background: var(--primary-green-light);
+    width: 50%;
+    margin: 30px auto;
+    border-radius: 5px;
+    opacity: 0.3;
+}
+
+/* --- الصورة المتجاوبة --- */
+.responsive-img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 20px;
+    box-shadow: var(--shadow-lg), 0 4px 10px rgba(0, 0, 0, 0.05);
+    margin: 25px 0;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.responsive-img:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-xl);
+}
+
+/* --- المسافات --- */
+.spacer-100 { height: 100px; }
+.spacer-50 { height: 50px; }
+.spacer-30 { height: 30px; }
+.spacer-20 { height: 20px; }

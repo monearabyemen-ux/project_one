@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مؤسسة الوليد الإنسانية | المشاريع والحملات</title>
+
+    <!-- External CSS (Icons) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Internal CSS -->
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/pages.css">
+    <link rel="stylesheet" href="../css/home.css">
+    <style>
+        /* ترتيب شبكة المشاريع بشكل صحيح */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .projects-grid .program-card {
+            width: 100%;
+            flex: none;
+            opacity: 1;
+            transform: none;
+        }
+
+        @media (max-width: 768px) {
+            .projects-grid {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                gap: 20px;
+                padding: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .projects-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ====================== Header ====================== -->
+    <header id="header">
+        <div class="logo-container">
+            <a href="../index.html">
+                <img src="../assets/logos/logo-white.svg" alt="مؤسسة الوليد للإنسانية">
+            </a>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="hmlat.html" style="color:var(--primary-green);">المشاريع</a></li>
+                <li><a href="cases.html">التبرعات</a></li>
+                <li><a href="view-us.html">المساعدات</a></li>
+                <li><a href="we.html">من نحن</a></li>
+                <li><i class="fas fa-bars"></i></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- ====================== Hero Section ====================== -->
+    <section class="about-hero small-hero"
+        style="background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('../images/qqy.jpg');">
+        <div>
+            <h1>المشاريع والحملات</h1>
+            <p>شارك معنا في بناء مستقبل أفضل من خلال دعم مشاريعنا المستمرة.</p>
+        </div>
+    </section>
+
+    <!-- ====================== المشاريع (Grid Layout) ====================== -->
+    <div class="spacer-30"></div>
+
+    <section style="padding: 20px 0;">
+        <div class="projects-grid">
+
+            <div class="program-card reveal text-1">
+                <div class="card-image">
+                    <img src="../images/IMG-20260323-WA0006.jpg" alt="مشروع إفطار صائم" loading="lazy">
+                </div>
+                <div class="card-content">
+                    <h3>مشروع إفطار صائم</h3>
+                    <p>يهدف هذا المشروع لتوفير وجبات الإفطار للأسر المتعففة خلال شهر رمضان المبارك في عدة دول حول
+                        العالم.</p>
+                    <div class="card-footer">
+                        <span>إغاثة عاجلة</span>
+                        <a href="donate.html">
+                            <button class="btn-apply">ادعم المشروع</button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="program-card reveal text-2">
+                <div class="card-image">
+                    <img src="../images/IMG-20260323-WA0007.jpg" alt="كسوة العيد" loading="lazy">
+                </div>
+                <div class="card-content">
+                    <h3>كسوة العيد</h3>
+                    <p>مشروع لإدخال الفرحة على قلوب الأطفال الأيتام والمحتاجين من خلال توفير ملابس جديدة للعيد.</p>
+                    <div class="card-footer">
+                        <span>تنمية مجتمعات</span>
+                        <a href="donate.html">
+                            <button class="btn-apply">ادعم المشروع</button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="program-card reveal text-3">
+                <div class="card-image">
+                    <img src="../images/IMG-20260323-WA0010.jpg" alt="سقيا الماء" loading="lazy">
+                </div>
+                <div class="card-content">
+                    <h3>مشروع سقيا الماء</h3>
+                    <p>توفير مياه الشرب النظيفة للقرى والمناطق النائية من خلال حفر الآبار وبناء محطات تحلية المياه.</p>
+                    <div class="card-footer">
+                        <span>إغاثة عاجلة</span>
+                        <a href="donate.html">
+                            <button class="btn-apply">ادعم المشروع</button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="program-card reveal text-1">
+                <div class="card-image">
+                    <img src="../images/mmx.jpg" alt="برنامج الإسكان" loading="lazy">
+                </div>
+                <div class="card-content">
+                    <h3>برنامج الإسكان</h3>
+                    <p>يهدف برنامج الإسكان إلى مساعدة الأسر المحتاجة في توفير سكن ملائم من خلال دعم الإيجار أو توفير
+                        وحدات سكنية.</p>
+                    <div class="card-footer">
+                        <span>تنمية المجتمعات</span>
+                        <a href="donate.html">
+                            <button class="btn-apply">ادعم المشروع</button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="program-card reveal text-2">
+                <div class="card-image">
+                    <img src="../images/mmz.jpg" alt="برنامج الدعم المالي" loading="lazy">
+                </div>
+                <div class="card-content">
+                    <h3>برنامج الدعم المالي</h3>
+                    <p>يوفر البرنامج دعماً مالياً مباشراً للمحتاجين والأرامل والمطلقات لمواجهة ظروف المعيشة الصعبة.</p>
+                    <div class="card-footer">
+                        <span>تنمية المجتمعات</span>
+                        <a href="donate.html">
+                            <button class="btn-apply">ادعم المشروع</button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="program-card reveal text-3">
+                <div class="card-image">
+                    <img src="../images/mml.jpg" alt="برنامج وسائل النقل" loading="lazy">
+                </div>
+                <div class="card-content">
+                    <h3>برنامج وسائل النقل</h3>
+                    <p>يساعد البرنامج الأسر المحتاجة والأرامل والمطلقات في الحصول على وسائل نقل تيسر لهم الحركة والعمل.
+                    </p>
+                    <div class="card-footer">
+                        <span>تنمية المجتمعات</span>
+                        <a href="donate.html">
+                            <button class="btn-apply">ادعم المشروع</button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <div class="spacer-50"></div>
+
+    <!-- ====================== الفوتر ====================== -->
+    <footer class="main-footer">
+        <div class="footer-container">
+            <div class="footer-section contact-info">
+                <h3>تواصل معنا</h3>
+                <div class="contact-links">
+                    <a href="mailto:support@alwaleed.com" class="contact-item">
+                        <i class="fas fa-envelope"></i> البريد الإلكتروني
+                    </a>
+                    <a href="https://wa.me/966578012189" class="contact-item">
+                        <i class="fab fa-whatsapp"></i> واتساب الدعم
+                    </a>
+                </div>
+            </div>
+
+            <div class="footer-section legal-links">
+                <h3>الروابط القانونية</h3>
+                <div class="links-grid">
+                    <a href="privacy-policy.html">سياسة الخصوصية</a>
+                    <a href="terms.html">شروط الاستخدام</a>
+                </div>
+            </div>
+
+            <div class="footer-divider"></div>
+
+            <div class="footer-bottom">
+                <p>جميع حقوق النشر والطبع محفوظة لمؤسسة الوليد © 2026</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="../js/main.js"></script>
+    <script src="../js/components.js"></script>
+</body>
+
+</html>
