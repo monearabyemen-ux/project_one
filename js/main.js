@@ -62,7 +62,14 @@ function initMain() {
         function nextSlide() {
             slides[currentSlide].classList.remove('active');
             currentSlide = (currentSlide + 1) % slides.length;
-            slides[currentSlide].classList.add('active');
+            
+            let nextEl = slides[currentSlide];
+            if (nextEl.dataset.bg) {
+                nextEl.style.backgroundImage = `url('${nextEl.dataset.bg}')`;
+                nextEl.removeAttribute('data-bg');
+            }
+            
+            nextEl.classList.add('active');
         }
 
         // بدء التبديل فوراً

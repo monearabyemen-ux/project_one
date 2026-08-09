@@ -142,21 +142,6 @@
 
     <!-- ====================== Firebase + WhatsApp Integration ====================== -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyC1-J4dSTmxUnz5d7dvq9XWrRHf_Lr511M",
-            authDomain: "alwaleed-3a813.firebaseapp.com",
-            projectId: "alwaleed-3a813",
-            storageBucket: "alwaleed-3a813.firebasestorage.app",
-            messagingSenderId: "680698906569",
-            appId: "1:680698906569:web:154df6466c1c89d67f4a18"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
         document.getElementById('sendWhatsapp').onclick = async function () {
             const name = document.getElementById('name').value.trim();
             const amount = document.getElementById('amount').value;
@@ -169,17 +154,37 @@
                 return;
             }
 
-            if (localStorage.getItem('hasDonated')) {
-                alert("عذراً، لقد قمت بتقديم طلب تبرع مسبقاً من هذا الجهاز.");
-                return;
-            }
-
             try {
+                const sendBtn = document.getElementById('sendWhatsapp');
+                sendBtn.disabled = true;
+                const oldText = sendBtn.innerText;
+                sendBtn.innerText = "جاري الحفظ...";
+
+                // Lazy load Firebase
+                const [{ initializeApp }, { getFirestore, collection, addDoc, query, where, getDocs }] = await Promise.all([
+                    import("https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"),
+                    import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js")
+                ]);
+
+                const firebaseConfig = {
+                    apiKey: "AIzaSyC1-J4dSTmxUnz5d7dvq9XWrRHf_Lr511M",
+                    authDomain: "alwaleed-3a813.firebaseapp.com",
+                    projectId: "alwaleed-3a813",
+                    storageBucket: "alwaleed-3a813.firebasestorage.app",
+                    messagingSenderId: "680698906569",
+                    appId: "1:680698906569:web:154df6466c1c89d67f4a18"
+                };
+
+                const app = initializeApp(firebaseConfig);
+                const db = getFirestore(app);
+
                 const q = query(collection(db, "donations"), where("name", "==", name));
                 const querySnapshot = await getDocs(q);
 
                 if (!querySnapshot.empty) {
                     alert("هذا الاسم مسجل لدينا بالفعل في طلب سابق. لا يمكن تكرار الطلب بنفس الاسم.");
+                    sendBtn.disabled = false;
+                    sendBtn.innerText = oldText;
                     return;
                 }
 
@@ -187,14 +192,15 @@
                     name, amount: Number(amount), currency, nationality, method, date: new Date().toISOString()
                 });
 
-                localStorage.setItem('hasDonated', 'true');
-
                 const adminPhone = "966578012189";
                 const message = `*طلب تقديم تبرع جديد* 🕊️\n\n*الاسم:* ${name}\n*الجنسية:* ${nationality}\n*المبلغ:* ${amount} ${currency}\n*الوسيلة:* ${method}\n\n_يرجى تزويدي بالبيانات اللازمة._`;
                 window.location.href = `https://wa.me/${adminPhone}?text=${encodeURIComponent(message)}`;
             } catch (e) {
                 console.error(e);
                 alert("حدث خطأ في الاتصال");
+                const sendBtn = document.getElementById('sendWhatsapp');
+                sendBtn.disabled = false;
+                sendBtn.innerText = "تأكيد وإرسال الطلب عبر واتساب";
             }
         };
     </script>
