@@ -187,6 +187,10 @@
 
                 const adminPhone = "966578012189";
                 const message = `*طلب تقديم تبرع جديد* 🕊️\n\n*الاسم:* ${name}\n*الجنسية:* ${nationality}\n*المبلغ:* ${amount} ${currency}\n*الوسيلة:* ${method}\n\n_يرجى تزويدي بالبيانات اللازمة._`;
+                
+                sendBtn.disabled = false;
+                sendBtn.innerText = "تأكيد وإرسال الطلب عبر واتساب";
+                
                 window.location.href = `https://wa.me/${adminPhone}?text=${encodeURIComponent(message)}`;
             } catch (e) {
                 console.error(e);

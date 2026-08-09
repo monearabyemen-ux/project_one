@@ -196,6 +196,9 @@
           message += "• *التفاصيل:* " + notes + "\n\n";
           message += "🪪 *أرفق صورة الهوية بعد رفع البيانات* 🪪";
 
+          sendBtn.disabled = false;
+          sendBtn.innerText = "إرسال الطلب عبر واتساب";
+
           window.location.href = `https://wa.me/${adminPhone}?text=${encodeURIComponent(message)}`;
 
         } catch (error) {
